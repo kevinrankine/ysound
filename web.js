@@ -19,22 +19,31 @@ app.get('/videos/:videoID', function (req, res) {
 	return;
     }
     var videoURL = "https://www.youtube.com/watch?v=" + videoID;
-    var videoStream = dl(videoURL);
-    /*
-    video.pipe(res, { end : false});
-    video.on('end', function (req, res) {
-	res.end();
-    }); 
-    */
-    var converter = new ffmpeg({source : videoStream}).toFormat('mp3').pipe(res, {end : false});
-    converter.on('end', function() {
-	res.end();
-    });
-    
+    try {
+	var videoStream = dl(videoURL);
+	var converter = new ffmpeg({source : videoStream, timeout: 3000})
+	    .withVideoBitrate(1024)
+	    .withAudioBitrate('128k')
+	    .toFormat('mp3')
+	    .writeToStream(res, function (retcode, err) {
+		if (err) {
+		    console.log(err);
+		}
+		else {
+		    console.log("The conversion pipe succeeded!");
+		}
+		res.end();
+		dl.cache = {};
+	    });
+    }
+    catch(err) {
+	console.log("Response failed!");
+	res.send("Response failed!");
+    }
 });
 app.get('/', function (req, res) {
     var videoID = req.query.q;
-    res.send('<video controls width="100%" height="100%" src=/videos/' + videoID + '></video>');
+    res.send('<audio controls src=/videos/' + videoID + '></audio>');
 });
 
 app.listen(8080);
