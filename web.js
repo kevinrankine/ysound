@@ -23,17 +23,16 @@ app.get('/videos/:videoID', function (req, res) {
     }
     var videoURL = "https://www.youtube.com/watch?v=" + videoID;
     var videoStream = dl(videoURL);
-
     var converter = new ffmpeg({source : videoStream})
 	.withVideoBitrate(1024)
 	.withAudioBitrate('128k')
 	.toFormat('mp3')
 	.writeToStream(res, function (retcode, err) {
 	    if (err) {
-		console.log(err);
+		console.log("We had a stream error.");
 	    }
 	    else {
-		console.log("The conversion pipe succeeded!");
+		// console.log("The conversion pipe succeeded!");
 	    }
 	    res.end();
 	});
@@ -49,4 +48,4 @@ process.on('uncaughtException', function (err) {
 
 
 
-app.listen(8080);
+app.listen(process.env.PORT || 8080);
