@@ -1,0 +1,31 @@
+{
+  "name": "tunes",
+  "version": "0.0.0",
+  "description": "Youtube sound extractor",
+  "main": "web.js",
+  "dependencies": {
+    "express": "~3.4.3",
+    "fluent-ffmpeg": "~1.5.2",
+    "split": "~0.2.10",
+    "through": "~2.3.4",
+    "ytdl": "~0.1.21"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node web.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kevinrankine/streamly.git"
+  },
+  "keywords": [
+    "youtube",
+    "music",
+    "streams"
+  ],
+  "author": "kakosr",
+  "license": "You can't use this shit, it's mine",
+  "bugs": {
+    "url": "https://github.com/kevinrankine/streamly/issues"
+  }
+}
