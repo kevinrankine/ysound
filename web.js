@@ -23,7 +23,7 @@ app.get('/videos/:videoID', function (req, res) {
     }
     var videoURL = "https://www.youtube.com/watch?v=" + videoID;
     var videoStream = dl(videoURL);
-    var converter = new ffmpeg({source : videoStream})
+    var converter = new ffmpeg({source : videoStream, timeout: 300})
 	.withVideoBitrate(1024)
 	.withAudioBitrate('128k')
 	.toFormat('mp3')
