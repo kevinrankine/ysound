@@ -11,6 +11,10 @@ app.set("view engine", "jade");
 app.set("views", __dirname + "/views");
 app.use(express.static(__dirname + "/public"));
 
+process.on('uncaughtException', function (err) {
+    // handles the unexpected stream closure error...for now
+});
+
 app.get("/favicon.ico", function (req, res) {
     res.sendfile("favicon.ico");
 });
@@ -21,6 +25,7 @@ app.get('/videos/:videoID', function (req, res) {
 	res.send("Error!");
 	return;
     }
+    res.writeHead(200, {"Content-Type" : "audio/mpeg", "X-Content-Duration" : 92.6});
     var videoURL = "https://www.youtube.com/watch?v=" + videoID;
     var videoStream = dl(videoURL);
     var converter = new ffmpeg({source : videoStream, timeout: 300})
@@ -29,23 +34,17 @@ app.get('/videos/:videoID', function (req, res) {
 	.toFormat('mp3')
 	.writeToStream(res, function (retcode, err) {
 	    if (err) {
-		console.log("We had a stream error.");
+		console.log("The stream was unexpectedly closed.");
 	    }
 	    else {
-		// console.log("The conversion pipe succeeded!");
+		console.log("The conversion pipe succeeded!");
 	    }
 	    res.end();
 	});
 });
 app.get('/', function (req, res) {
-    var videoID = req.query.q;
+    var videoID = req.query.v;
     res.render("index", {"videoID" : videoID});
 });
-
-process.on('uncaughtException', function (err) {
-    // handles the unexpected stream closure error...for now
-});
-
-
 
 app.listen(process.env.PORT || 8080);
