@@ -6,14 +6,12 @@ var express = require('express');
 var app = express();
 var dl = require('ytdl');
 var ffmpeg = require('fluent-ffmpeg');
+var rest = require("restler")
+var cheerio = require("cheerio");
 
 app.set("view engine", "jade");
 app.set("views", __dirname + "/views");
 app.use(express.static(__dirname + "/public"));
-
-process.on('uncaughtException', function (err) {
-    console.log(err.message);
-});
 
 app.get("/favicon.ico", function (req, res) {
     res.sendfile("favicon.ico");
@@ -42,9 +40,31 @@ app.get('/videos/:videoID', function (req, res) {
 	    }
 	});
 });
-app.get('/', function (req, res) {
+app.get('/watch', function (req, res) {
     var videoID = req.query.v;
-    res.render("index", {"videoID" : videoID});
+    var searchQuery = req.query.q;
+
+    if (videoID) {
+	res.render("index", {"videoID" : videoID});
+    }
+    else if (searchQuery) {
+	var listingURL = "http://youtube.com/results?search_query=";
+	listingURL += searchQuery.split(" ").join("+");
+	console.log("The listing url is ", listingURL);
+	
+	rest.get(listingURL).on("complete", function (data) {
+	    if (data instanceof Error) {
+		res.end("Couldn't load page.");
+		return;
+	    }
+	    $ = cheerio.load(data);
+	    var listingData = $("a.yt-uix-sessionlink.yt-uix-tile-link.yt-uix-contextlink.yt-ui-ellipsis.yt-ui-ellipsis-2");
+	    res.render("index", {"listingData" : listingData});
+	});
+    }
+    else {
+	res.render("index");
+    }
 });
 
 app.listen(process.env.PORT || 8080);

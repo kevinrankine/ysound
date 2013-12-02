@@ -4,4 +4,17 @@ html(lang="en")
     link(rel="stylesheet", type="text/css", href="/css/main.css")
     script(type="text/javascript" src="/js/jquery-1.10.2.js")
   body
-    audio(src="/videos/" + videoID, autoplay, preload="auto")
+    if videoID
+      h1 Enjoy dat sound
+      audio(src="/videos/" + videoID, autoplay, preload="auto")
+    else if listingData
+      h1 A list of sound
+      each val in listingData
+        li
+           a(href=val.attribs.href) 
+              != val.attribs.title
+    else
+      h1 Search
+      form(method="GET", action="/watch")
+        input(name="q", type="text")
+        input(name="submit", type="Submit")

@@ -4,9 +4,11 @@
   "description": "",
   "main": "web.js",
   "dependencies": {
+    "cheerio": "~0.12.4",
     "express": "~3.4.4",
     "fluent-ffmpeg": "~1.5.2",
     "jade": "~0.35.0",
+    "restler": "~2.0.1",
     "split": "~0.2.10",
     "through": "~2.3.4",
     "ytdl": "~0.1.21"
@@ -19,7 +21,7 @@
     "type": "git",
     "url": "https://github.com/kevinrankine/streamly.git"
   },
-  "author": "",
+  "author": "kakosr",
   "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/kevinrankine/streamly/issues"
