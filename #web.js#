@@ -1,3 +1,22 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #!/usr/bin/env node
 
 var http = require('http');
@@ -35,11 +54,12 @@ app.get('/videos/:videoID', function (req, res) {
 	.writeToStream(res, function (retcode, err) {
 	    if (err) {
 		console.log("A pipe closed.");
-		res.end()
+		console.log(err.message);
 	    }
 	    else {
 		console.log("The conversion pipe succeeded!");
 	    }
+	    res.end();
 	});
 });
 app.get('/', function (req, res) {
