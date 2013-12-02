@@ -1,5 +1,0 @@
-doctype html
-html(lang="en")
-  head
-  body
-    audio(src="/videos/" + videoID, controls)

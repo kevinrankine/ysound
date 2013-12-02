@@ -1,7 +1,7 @@
 {
   "name": "tunes",
   "version": "0.0.0",
-  "description": "",
+  "description": "Gets only the audio from youtube",
   "main": "web.js",
   "dependencies": {
     "cheerio": "~0.12.4",
@@ -15,14 +15,21 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "forever web.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/kevinrankine/streamly.git"
   },
-  "author": "kakosr",
-  "license": "BSD-2-Clause",
+  "keywords": [
+    "youtube",
+    "audio",
+    "sound",
+    "music",
+    "player"
+  ],
+  "author": "Kevin Akos Rankine",
+  "license": "I don't know",
   "bugs": {
     "url": "https://github.com/kevinrankine/streamly/issues"
   }
