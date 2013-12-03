@@ -85,9 +85,4 @@ else {
     });
 
     app.listen(process.env.PORT || 80);
-    /*
-      process.on("uncaughtException", function (err) {
-      console.log(err.message);
-      });
-    */
 }
