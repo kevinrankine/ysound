@@ -5,8 +5,8 @@ html(lang="en")
     script(type="text/javascript" src="/js/jquery-1.10.2.js")
   body
     if videoID
-      h1 Enjoy dat sound
-      audio(src="/videos/" + videoID, autoplay, preload="auto")
+      h1(style="text-align: center") Enjoy dat sound
+      audio(src="/videos/" + videoID, autoplay, preload="auto", controls)
     else if listingData
       h1 A list of sound
       each val in listingData

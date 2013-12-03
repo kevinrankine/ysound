@@ -23,7 +23,7 @@ app.get('/videos/:videoID', function (req, res) {
 	res.send("Video ID is not valid.");
 	return;
     }
-    res.writeHead(200, {"Content-Type" : "audio/mp3"});
+    res.writeHead(200, {"Content-Type" : "audio/mp3", "Content-Length" : 1000000 * 10});
     var videoURL = "https://www.youtube.com/watch?v=" + videoID;
     var videoStream = dl(videoURL);
     var converter = new ffmpeg({source : videoStream, timeout: 300})
@@ -31,6 +31,7 @@ app.get('/videos/:videoID', function (req, res) {
 	.withAudioBitrate('128k')
 	.toFormat('mp3')
 	.writeToStream(res, function (retcode, err) {
+	    console.log(retcode);
 	    if (err) {
 		console.log("A pipe closed.");
 		res.end()
@@ -58,7 +59,7 @@ app.get('/watch', function (req, res) {
 		return;
 	    }
 	    $ = cheerio.load(data);
-	    var listingData = $("a.yt-uix-sessionlink.yt-uix-tile-link.yt-uix-contextlink.yt-ui-ellipsis.yt-ui-ellipsis-2");
+	    var listingData = $("a.yt-uix-sessionlink.yt-uix-tile-link.yt-ui-ellipsis.yt-ui-ellipsis-2");
 	    res.render("index", {"listingData" : listingData});
 	});
     }
@@ -67,4 +68,9 @@ app.get('/watch', function (req, res) {
     }
 });
 
-app.listen(process.env.PORT || 8080);
+app.listen(process.env.PORT || 80);
+/*
+process.on("uncaughtException", function (err) {
+    console.log(err.message);
+});
+*/
