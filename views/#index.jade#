@@ -6,9 +6,7 @@ html(lang="en")
   body
     if videoID
       h1(style="text-align: center") Enjoy dat sound
-      audio(autoplay, preload="auto", controls)
-        source(src="/videos/" + videoID,type="audio/mpeg")
-        Your browser does not support this format
+      audio(src="/videos/" + videoID, autoplay, preload="auto", controls) Your 
     else if listingData
       h1 A list of sound
       each val in listingData

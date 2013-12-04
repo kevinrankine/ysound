@@ -1,30 +1,35 @@
 #!/usr/bin/env node
 
-var http = require('http');
-var fs = require('fs');
-var express = require('express');
-var app = express();
-var dl = require('ytdl');
-var ffmpeg = require('fluent-ffmpeg');
-var rest = require("restler")
-var cheerio = require("cheerio");
+// the cluster module provides for creating several node worker processes in the event that one breaks down
 var cluster = require("cluster");
+
+/* 
+   the number of nodes that is optimal depends heavily on the platform. I ran this code on a EC2 t1.micro instance
+   so there wasn't much sense in using too many as each subprocess eats up the very limited memory
+*/
 var numNodes = 5;
+
 if (cluster.isMaster) {
     for(var i = 0; i < numNodes; i++) {
 	cluster.fork();
     }
-    cluster.on('disconnect', function(worker) {
-	console.error('disconnect!');
-	cluster.fork();
+    cluster.on("disconnect", function(worker) {
+	console.error("A node disconnected.");
+	cluster.fork(); 
     });
-    setInterval(function () {
-	for(var i = 0; i < numNodes - cluster.workers.length; i++) {
-	    cluster.fork();
-	}
-    }, 3000);
 }
 else {
+    var http = require('http');
+    var fs = require('fs');
+    var express = require('express');
+    var app = express();
+    var dl = require('ytdl');
+    var ffmpeg = require('fluent-ffmpeg');
+    var rest = require("restler")
+    var cheerio = require("cheerio");
+    
+    var CSS_LINK_SELECTOR = "a.yt-uix-sessionlink.yt-uix-tile-link.yt-ui-ellipsis.yt-ui-ellipsis-2";
+    
     app.set("view engine", "jade");
     app.set("views", __dirname + "/views");
     app.use(express.static(__dirname + "/public"));
@@ -39,7 +44,7 @@ else {
 	    res.send("Video ID is not valid.");
 	    return;
 	}
-	res.writeHead(200, {"Content-Type" : "audio/mp3", "Content-Length" : 1000000 * 10});
+	res.writeHead(200, {"Content-Type" : "audio/mp3"});
 	var videoURL = "https://www.youtube.com/watch?v=" + videoID;
 	var videoStream = dl(videoURL);
 	var converter = new ffmpeg({source : videoStream, timeout: 300})
@@ -47,13 +52,11 @@ else {
 	    .withAudioBitrate('128k')
 	    .toFormat('mp3')
 	    .writeToStream(res, function (retcode, err) {
-		console.log(retcode);
 		if (err) {
-		    console.log("A pipe closed.");
-		    res.end()
+		    // do something
 		}
 		else {
-		    console.log("The conversion pipe succeeded!");
+		    // do something else
 		}
 	    });
     });
@@ -67,7 +70,6 @@ else {
 	else if (searchQuery) {
 	    var listingURL = "http://youtube.com/results?search_query=";
 	    listingURL += searchQuery.split(" ").join("+");
-	    console.log("The listing url is ", listingURL);
 	    
 	    rest.get(listingURL).on("complete", function (data) {
 		if (data instanceof Error) {
@@ -75,13 +77,17 @@ else {
 		    return;
 		}
 		$ = cheerio.load(data);
-		var listingData = $("a.yt-uix-sessionlink.yt-uix-tile-link.yt-ui-ellipsis.yt-ui-ellipsis-2");
+		var listingData = $(CSS_LINK_SELECTOR);
 		res.render("index", {"listingData" : listingData});
 	    });
 	}
 	else {
 	    res.render("index");
 	}
+    });
+    
+    app.get("*", function (req, res) {
+	res.send("The content you requested could not be found.", 404);
     });
 
     app.listen(process.env.PORT || 80);
