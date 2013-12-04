@@ -1,0 +1,9 @@
+extends layout
+block content
+  .row-fluid
+    .span12
+      h1(style="text-align: center") Enjoy the sound
+  .row-fluid
+    .span12
+      audio(preload="none", controls, src="/videos/" + videoID)
+        span Your browser does not support this format

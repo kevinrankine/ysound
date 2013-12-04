@@ -1,0 +1,12 @@
+extends layout
+block content
+  h1 Search
+  form(method="GET", action="/watch")      
+    .row-fluid
+      .span12
+        input(name="q", type="text")
+    br
+    .row-fluid
+      .span12
+        button.btn.btn-default(type="Submit") Submit
+          

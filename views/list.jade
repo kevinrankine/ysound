@@ -1,0 +1,7 @@
+extends layout
+block content
+  h1 A list of sound
+  each val in listingData
+    li
+      a(href=val.attribs.href) 
+        != val.attribs.title

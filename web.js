@@ -28,15 +28,12 @@ else {
     var rest = require("restler")
     var cheerio = require("cheerio");
     
+    // this selector is determined by youtube, and should be updated when changed (it refers to a link element leading to a video on the listing page
     var CSS_LINK_SELECTOR = "a.yt-uix-sessionlink.yt-uix-tile-link.yt-ui-ellipsis.yt-ui-ellipsis-2";
     
     app.set("view engine", "jade");
     app.set("views", __dirname + "/views");
     app.use(express.static(__dirname + "/public"));
-
-    app.get("/favicon.ico", function (req, res) {
-	res.sendfile("favicon.ico");
-    });
 
     app.get('/videos/:videoID', function (req, res) {
 	var videoID = req.params.videoID;
@@ -44,10 +41,14 @@ else {
 	    res.send("Video ID is not valid.");
 	    return;
 	}
-	res.writeHead(200, {"Content-Type" : "audio/mp3"});
+	res.writeHead(200, {
+	    "Content-Type" : "audio/mp3",
+	    "Transfer-Encoding" : "chunked"
+	});
+	
 	var videoURL = "https://www.youtube.com/watch?v=" + videoID;
 	var videoStream = dl(videoURL);
-	var converter = new ffmpeg({source : videoStream, timeout: 300})
+	var converter = new ffmpeg({source : videoStream, timeout: 30000})
 	    .withVideoBitrate(1024)
 	    .withAudioBitrate('128k')
 	    .toFormat('mp3')
@@ -58,14 +59,14 @@ else {
 		else {
 		    // do something else
 		}
-	    });
-    });
+	    }); 
+    }); 
     app.get('/watch', function (req, res) {
 	var videoID = req.query.v;
 	var searchQuery = req.query.q;
 
 	if (videoID) {
-	    res.render("index", {"videoID" : videoID});
+	    res.render("video", {"videoID" : videoID});
 	}
 	else if (searchQuery) {
 	    var listingURL = "http://youtube.com/results?search_query=";
@@ -78,11 +79,11 @@ else {
 		}
 		$ = cheerio.load(data);
 		var listingData = $(CSS_LINK_SELECTOR);
-		res.render("index", {"listingData" : listingData});
+		res.render("list", {"listingData" : listingData});
 	    });
 	}
 	else {
-	    res.render("index");
+	    res.render("search");
 	}
     });
     
