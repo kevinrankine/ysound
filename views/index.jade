@@ -1,14 +1,17 @@
 doctype html
 html(lang="en")
   head
+    link(rel="stylesheet", type="text/css",href="/css/bootstrap.min.css")
     link(rel="stylesheet", type="text/css", href="/css/main.css")
+    script(type="text/javascript" src="/js/bootstrap.min.js")
     script(type="text/javascript" src="/js/jquery-1.10.2.js")
   body
     if videoID
-      h1(style="text-align: center") Enjoy dat sound
-      audio(autoplay, preload="auto", controls)
-        source(src="/videos/" + videoID,type="audio/mpeg")
-        Your browser does not support this format
+      .row
+        .span12
+          audio(autoplay, preload="auto", controls)
+            source(src="/videos/" + videoID,type="audio/mpeg")
+            span Your browser does not support this format
     else if listingData
       h1 A list of sound
       each val in listingData
