@@ -46,7 +46,7 @@ else {
 	    "Transfer-Encoding" : "chunked"
 	});
 	
-	var videoURL = "https://www.youtube.com/watch?v=" + videoID;
+	var videoURL = "http://www.youtube.com/watch?v=" + videoID;
 	var videoStream = dl(videoURL);
 	var converter = new ffmpeg({source : videoStream, timeout: 30000})
 	    .withVideoBitrate(1024)
