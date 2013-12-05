@@ -2,7 +2,7 @@ extends layout
 block content
   .row-fluid
     .span12
-      h1(style="text-align: center") Enjoy the sound
+      h1(style="text-align: center") Listen
   .row-fluid
     .span12
       audio(preload="none", autoplay, controls, src="/videos/" + videoID)
@@ -10,3 +10,6 @@ block content
   .row-fluid
     .span12
       a(href="/watch") Search
+  .row-fluid
+    .span12
+      a(href="/videos/" + videoID) Download

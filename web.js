@@ -43,7 +43,8 @@ else {
 	}
 	res.writeHead(200, {
 	    "Content-Type" : "audio/mp3",
-	    "Transfer-Encoding" : "chunked"
+	    "Transfer-Encoding" : "chunked",
+	    "Content-disposition" : "attachment; filename=" + videoID + ".mp3" 
 	});
 	
 	var videoURL = "http://www.youtube.com/watch?v=" + videoID;
