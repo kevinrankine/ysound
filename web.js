@@ -19,14 +19,15 @@ if (cluster.isMaster) {
     });
 }
 else {
-    var http = require('http');
-    var fs = require('fs');
-    var express = require('express');
+    var http = require("http");
+    var fs = require("fs");
+    var express = require("express");
     var app = express();
-    var dl = require('ytdl');
+    var dl = require("ytdl");
     var ffmpeg = require('fluent-ffmpeg');
     var rest = require("restler")
     var cheerio = require("cheerio");
+    var domain = require("domain");
     
     // this selector is determined by youtube, and should be updated when changed (it refers to a link element leading to a video on the listing page
     var CSS_LINK_SELECTOR = "a.yt-uix-sessionlink.yt-uix-tile-link.yt-ui-ellipsis.yt-ui-ellipsis-2";
