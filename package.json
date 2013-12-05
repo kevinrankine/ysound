@@ -1,7 +1,7 @@
 {
-  "name": "tunes",
+  "name": "ysound",
   "version": "0.0.0",
-  "description": "Gets only the audio from youtube",
+  "description": "Listen to just the sounds of youtube",
   "main": "web.js",
   "dependencies": {
     "cheerio": "~0.12.4",
@@ -9,28 +9,27 @@
     "fluent-ffmpeg": "~1.5.2",
     "jade": "~0.35.0",
     "restler": "~2.0.1",
+    "ytdl": "~0.1.21",
     "split": "~0.2.10",
-    "through": "~2.3.4",
-    "ytdl": "~0.1.21"
+    "through": "~2.3.4"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "forever web.js"
+    "test": "sudo node web.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kevinrankine/streamly.git"
+    "url": "https://github.com/kevinrankine/ysound.git"
   },
   "keywords": [
     "youtube",
-    "audio",
     "sound",
     "music",
     "player"
   ],
   "author": "Kevin Akos Rankine",
-  "license": "I don't know",
+  "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/kevinrankine/streamly/issues"
+    "url": "https://github.com/kevinrankine/ysound/issues"
   }
 }
