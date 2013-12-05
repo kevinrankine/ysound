@@ -54,26 +54,24 @@ else {
 	    .withVideoBitrate(1024)
 	    .withAudioBitrate('128k')
 	    .toFormat('mp3')
-	    .writeToStream(res, function (retcode, err) {
-		if (err) {
-		    // do something
-		}
-		else {
-		    // do something else
-		}
+	    .writeToStream(res, function (stdout, stderr) {
+		//do something
 	    }); 
     }); 
     app.get('/watch', function (req, res) {
 	var videoID = req.query.v;
 	var searchQuery = req.query.q;
-
+	var pageNumber = req.query.page
 	if (videoID) {
 	    res.render("video", {"videoID" : videoID});
 	}
 	else if (searchQuery) {
 	    var listingURL = "http://youtube.com/results?search_query=";
+	    if (!pageNumber) {
+		var pageNumber = 1;
+	    }	    
 	    listingURL += searchQuery.split(" ").join("+");
-	    
+	    listingURL += "&page=" + pageNumber;
 	    rest.get(listingURL).on("complete", function (data) {
 		if (data instanceof Error) {
 		    res.end("Couldn't load page.");
@@ -81,7 +79,11 @@ else {
 		}
 		$ = cheerio.load(data);
 		var listingData = $(CSS_LINK_SELECTOR);
-		res.render("list", {"listingData" : listingData});
+		pageNumber++;
+		res.render("list", {
+		    "listingData" : listingData,
+		    "nextPageUrl" : "/watch?q=" + searchQuery + "&page=" + pageNumber
+		});
 	    });
 	}
 	else {
