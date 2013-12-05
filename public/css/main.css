@@ -9,3 +9,6 @@ audio {
 input {
    width: 100%;
 }
+.span12 {
+    padding: 2%;
+}
