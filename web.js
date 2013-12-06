@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// the cluster module provides for creating several node worker processes in the event that one breaks down
+// the cluster module provides for creating several node worker processes in the event that one breaks down 
 var cluster = require("cluster");
 
 /* 
