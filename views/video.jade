@@ -5,7 +5,8 @@ block content
       h1(style="text-align: center") Listen
   .row-fluid
     .span12
-      audio(preload="none", autoplay, controls, src="/videos/" + videoID)
+      audio(preload="none", autoplay, controls)
+        source(src="/videos/" + videoID)
         span Your browser does not support this format
   .row-fluid
     .span12
