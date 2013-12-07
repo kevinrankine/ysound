@@ -61,7 +61,7 @@ else {
     
     // displays the home page
     app.get("/", function (req, res) {
-	res.render("index");
+	res.send("Go to <a href=\"/watch\">http://kevinrankine.com/watch</a>");
     });
     
     /*
