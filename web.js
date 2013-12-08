@@ -165,6 +165,14 @@ else {
 	    }
 	});
 	
+	app.get("/design", function (req, res) {
+	    res.sendfile("./design.html");
+	});
+
+	app.get("/documentation", function (req, res) {
+	    res.sendfile("./documentation.html");
+	});
+
 	/*
 	  Any URL that is not handled by the previous handlers is 404ed.
 	*/
