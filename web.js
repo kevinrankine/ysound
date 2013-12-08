@@ -98,7 +98,7 @@ else {
 		.withAudioBitrate('128k')
 		.toFormat('mp3')
 		.writeToStream(res, function (retcode, err) {
-		    console.log(err);
+		    console.log("ffmpeg complained about something");
 		}); 
 	}); 
 	/*
@@ -181,6 +181,6 @@ else {
 	process.exit(1);
     });
 
-    http.createServer(app).listen(app.get("PORT"));
-
+    var server = http.createServer(app).listen(app.get("PORT"));
+    d.add(server);
 }
