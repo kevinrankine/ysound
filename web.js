@@ -59,114 +59,127 @@ else {
     // static files (js and css) are in the public/ subdirectory
     app.use(express.static(__dirname + "/public"));
     
-    // displays the home page
-    app.get("/", function (req, res) {
-	res.send("Go to <a href=\"/watch\">http://kevinrankine.com/watch</a>");
-    });
-    
-    /*
-      This function handles a GET request for the audio of a particular youtube video, specified by the videoID parameter (which is used by youtube).
-      It sends headers indicating that the content to be received by the client is mp3 data, and using content disposition it suggests that the browser download the video (instead of trying to play it)
-      It downloads the video to a stream and pipes this to an ffmpeg converter (interfaced by fluent-ffmpeg),  which converts the video to mp3 and pipes the mp3 data to the client.
-      Because the conversion is done 'on the fly', the audio is received by the client much faster than if we wrote the video to disk, converted it, wrote the mp3 to disk, and served the file.
-    */
-    app.get('/videos/:videoID', function (req, res) {
-	// the videoID parameter
-	var videoID = req.params.videoID;
-	
-	// the url at which the requested video lives on youtube
-	var videoURL = "http://www.youtube.com/watch?v=" + videoID;
-	
-	// start downloading the video here
-	var videoStream = dl(videoURL);
-	
-	// send out the HTTP headers
-	res.writeHead(200, {
-	    "Content-Type" : "audio/mp3",
-	    "Transfer-Encoding" : "chunked",
-	    "Content-disposition" : "attachment; filename=" + videoID + ".mp3" 
+    var d  = domain.create();
+
+    d.run(function() {
+	// displays the home page
+	app.get("/", function (req, res) {
+	    res.send("Go to <a href=\"/watch\">http://kevinrankine.com/watch</a>");
 	});
-
-	// converts the video data to mp3
-	// if there's an error, it logs it.
-	var converter = new ffmpeg({source : videoStream, timeout: 30000})
-	    .withVideoBitrate(512)
-	    .withAudioBitrate('128k')
-	    .toFormat('mp3')
-	    .writeToStream(res, function (retcode, err) {
-		console.log(err);
-	    }); 
-    }); 
-    /*
-      Three things are handled by this route/handler: search, listing the results of a search, and the playing of the audio of a video.
-      If no GET parameters are present, a search interface is displayed (implemented in search.jade).
-      If a 'q' parameter is present, corresponding to a a user's search, the restler library is used to get the youtube search results for that search,
-      (if the page parameter is present, that page number of the results is collected) and the cheerio module is used to parse out the list of links, 
-      which is then displayed using the view implementedby list.jade. If the 'v' parameter is present, corresponding the the ID of a youtube video, then 
-      a view for playing the video is implemented by video.jade.
-     */
-    app.get('/watch', function (req, res) {
-	// the ID of the video requested, if present
-	var videoID = req.query.v;
 	
-	// the search query of the user, if present.
-	var searchQuery = req.query.q;
-	
-	// the page number of results requested, if present.n
-	var pageNumber = req.query.page;
-
-	// if we got a a request for a youtube video, render a view containing an HTML5 audio element for playing the video
-	if (videoID) {
-	    res.render("video", {"videoID" : videoID});
-	}
-	
-	// if the user searched for something, list out the search results
-	else if (searchQuery) {
-
+	/*
+	  This function handles a GET request for the audio of a particular youtube video, specified by the videoID parameter (which is used by youtube).
+	  It sends headers indicating that the content to be received by the client is mp3 data, and using content disposition it suggests that the browser download the video (instead of trying to play it)
+	  It downloads the video to a stream and pipes this to an ffmpeg converter (interfaced by fluent-ffmpeg),  which converts the video to mp3 and pipes the mp3 data to the client.
+	  Because the conversion is done 'on the fly', the audio is received by the client much faster than if we wrote the video to disk, converted it, wrote the mp3 to disk, and served the file.
+	*/
+	app.get('/videos/:videoID', function (req, res) {
+	    // the videoID parameter
+	    var videoID = req.params.videoID;
 	    
-	    // if the pageNumber paramter is not present, set it equal to 1
-	    if (!pageNumber) {
-		var pageNumber = 1;
-	    }	    	    
-
-	    // construct the search query URL
-	    var listingURL = "http://youtube.com/results?search_query=";
-	    listingURL += searchQuery.split(" ").join("+");
-	    listingURL += "&page=" + pageNumber;
+	    // the url at which the requested video lives on youtube
+	    var videoURL = "http://www.youtube.com/watch?v=" + videoID;
 	    
-	    // gets the video listing from youtube
-	    rest.get(listingURL).on("complete", function (data) {
-		// if there is an error in getting the data, kill it
-		if (data instanceof Error) {
-		    res.end("Couldn't load page.");
-		    return;
-		}
-		
-		// select out all the links on the search result page using cheerio
-		$ = cheerio.load(data); 
-		var listingData = $(CSS_LINK_SELECTOR);
-		
-		pageNumber++;
-		
-		res.render("list", {
-		    "listingData" : listingData,
-		    "nextPageUrl" : "/watch?q=" + searchQuery + "&page=" + pageNumber
-		});
+	    // start downloading the video here
+	    var videoStream = dl(videoURL);
+	    
+	    // send out the HTTP headers
+	    res.writeHead(200, {
+		"Content-Type" : "audio/mp3",
+		"Transfer-Encoding" : "chunked",
+		"Content-disposition" : "attachment; filename=" + videoID + ".mp3" 
 	    });
-	}
+
+	    // converts the video data to mp3
+	    // if there's an error, it logs it.
+	    var converter = new ffmpeg({source : videoStream, timeout: 30000})
+		.withVideoBitrate(512)
+		.withAudioBitrate('128k')
+		.toFormat('mp3')
+		.writeToStream(res, function (retcode, err) {
+		    console.log(err);
+		}); 
+	}); 
+	/*
+	  Three things are handled by this route/handler: search, listing the results of a search, and the playing of the audio of a video.
+	  If no GET parameters are present, a search interface is displayed (implemented in search.jade).
+	  If a 'q' parameter is present, corresponding to a a user's search, the restler library is used to get the youtube search results for that search,
+	  (if the page parameter is present, that page number of the results is collected) and the cheerio module is used to parse out the list of links, 
+	  which is then displayed using the view implementedby list.jade. If the 'v' parameter is present, corresponding the the ID of a youtube video, then 
+	  a view for playing the video is implemented by video.jade.
+	*/
+	app.get('/watch', function (req, res) {
+	    // the ID of the video requested, if present
+	    var videoID = req.query.v;
+	    
+	    // the search query of the user, if present.
+	    var searchQuery = req.query.q;
+	    
+	    // the page number of results requested, if present.n
+	    var pageNumber = req.query.page;
+
+	    // if we got a a request for a youtube video, render a view containing an HTML5 audio element for playing the video
+	    if (videoID) {
+		res.render("video", {"videoID" : videoID});
+	    }
+	    
+	    // if the user searched for something, list out the search results
+	    else if (searchQuery) {
+
+		
+		// if the pageNumber paramter is not present, set it equal to 1
+		if (!pageNumber) {
+		    var pageNumber = 1;
+		}	    	    
+
+		// construct the search query URL
+		var listingURL = "http://youtube.com/results?search_query=";
+		listingURL += searchQuery.split(" ").join("+");
+		listingURL += "&page=" + pageNumber;
+		
+		// gets the video listing from youtube
+		rest.get(listingURL).on("complete", function (data) {
+		    // if there is an error in getting the data, kill it
+		    if (data instanceof Error) {
+			res.end("Couldn't load page.");
+			return;
+		    }
+		    
+		    // select out all the links on the search result page using cheerio
+		    $ = cheerio.load(data); 
+		    var listingData = $(CSS_LINK_SELECTOR);
+		    
+		    pageNumber++;
+		    
+		    res.render("list", {
+			"listingData" : listingData,
+			"nextPageUrl" : "/watch?q=" + searchQuery + "&page=" + pageNumber
+		    });
+		});
+	    }
+	    
+	    // if the user neither searched nor requested a particular video, just render the search.
+	    else {
+		res.render("search");
+	    }
+	});
 	
-	// if the user neither searched nor requested a particular video, just render the search.
-	else {
-	    res.render("search");
-	}
+	/*
+	  Any URL that is not handled by the previous handlers is 404ed.
+	*/
+	app.get("*", function (req, res) {
+	    res.send("The content you requested could not be found.", 404);
+	});
+	
     });
-    
-    /*
-      Any URL that is not handled by the previous handlers is 404ed.
-     */
-    app.get("*", function (req, res) {
-	res.send("The content you requested could not be found.", 404);
+
+    d.on('error', function (err) {
+	console.log("Error: ", err.stack);
+	process.exit(1);
+	cluster.worker.disconnect();
+	server.close();
     });
 
     http.createServer(app).listen(app.get("PORT"));
+
 }
