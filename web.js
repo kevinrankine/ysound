@@ -33,6 +33,7 @@ else {
       fluent-ffmpeg (the NodeJS interface/wrapper for ffmpeg on the system),
       restler (the REST client library used for the search functionality),
       cheerio (used for parsing the html gathered by restler)
+      domain is used for asynchronous error handling, binding errors to the created domain
     */
     var http = require("http");
     var express = require("express");
