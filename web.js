@@ -176,9 +176,9 @@ else {
 
     d.on('error', function (err) {
 	console.log("Error: ", err.stack);
-	process.exit(1);
 	cluster.worker.disconnect();
 	server.close();
+	process.exit(1);
     });
 
     http.createServer(app).listen(app.get("PORT"));
