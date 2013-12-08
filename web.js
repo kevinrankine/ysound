@@ -65,7 +65,7 @@ else {
     d.run(function() {
 	// displays the home page
 	app.get("/", function (req, res) {
-	    res.send("Go to <a href=\"/watch\">http://kevinrankine.com/watch</a>");
+	    res.send("Go to <a href=\"/watch\">http://ysound.li/watch</a>");
 	});
 	
 	/*
